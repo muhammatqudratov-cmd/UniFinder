@@ -1,32 +1,32 @@
 {
-  "$schema": "https://json.schemastore.org/nest-cli",
-  "collection": "@nestjs/schematics",
-  "sourceRoot": "apps/unifinder-api/src",
-  "compilerOptions": {
-    "deleteOutDir": true,
-    "webpack": true,
-    "tsConfigPath": "apps/unifinder-api/tsconfig.app.json"
-  },
-  "monorepo": true,
-  "root": "apps/unifinder-api",
-  "projects": {
-    "unifinder": {
-      "type": "application",
-      "root": "apps/unifinder-api",
-      "entryFile": "main",
-      "sourceRoot": "apps/unifinder-api/src",
-      "compilerOptions": {
-        "tsConfigPath": "apps/unifinder-api/tsconfig.app.json"
-      }
-    },
-    "unifinder-batch": {
-      "type": "application",
-      "root": "apps/unifinder-batch",
-      "entryFile": "main",
-      "sourceRoot": "apps/unifinder-batch/src",
-      "compilerOptions": {
-        "tsConfigPath": "apps/unifinder-batch/tsconfig.app.json"
-      }
-    }
-  }
+	"$schema": "https://json.schemastore.org/nest-cli",
+	"collection": "@nestjs/schematics",
+	"sourceRoot": "apps/unifinder-api/src",
+	"compilerOptions": {
+		"deleteOutDir": true,
+		"webpack": true,
+		"tsConfigPath": "apps/unifinder-api/tsconfig.app.json"
+	},
+	"monorepo": true,
+	"root": "apps/unifinder-api",
+	"projects": {
+		"unifinder-api": {
+			"type": "application",
+			"root": "apps/unifinder-api",
+			"entryFile": "main",
+			"sourceRoot": "apps/unifinder-api/src",
+			"compilerOptions": {
+				"tsConfigPath": "apps/unifinder-api/tsconfig.app.json"
+			}
+		},
+		"unifinder-batch": {
+			"type": "application",
+			"root": "apps/unifinder-batch",
+			"entryFile": "main",
+			"sourceRoot": "apps/unifinder-batch/src",
+			"compilerOptions": {
+				"tsConfigPath": "apps/unifinder-batch/tsconfig.app.json"
+			}
+		}
+	}
 }
