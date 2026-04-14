@@ -77,4 +77,22 @@ export class Member {
 
 	@Field(() => Date)
 	updatedAt: Date;
+
+	@Field(() => String, { nullable: true }) //Frotend ga yuborish uchun
+	accessToken?: string; // signup va login da token yaratib yuborish uchun
+}
+
+@ObjectType()
+export class TotalCounter {
+	@Field(() => Int, { nullable: true })
+	total: number;
+}
+
+@ObjectType()
+export class Members {
+	@Field(() => [Member])
+	list: Member[];
+
+	@Field(() => [TotalCounter], { nullable: true })
+	metaCounter: TotalCounter[];
 }

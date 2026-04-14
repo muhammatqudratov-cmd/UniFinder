@@ -1,91 +1,91 @@
 import { Schema } from 'mongoose';
-import { UniversityLocation, UniversityStatus, UniversityType } from '../libs/enums/university.enum';
+import { PropertyLocation, PropertyStatus, PropertyType } from '../libs/enums/property.enum';
 
-const UniversitySchema = new Schema(
+const PropertySchema = new Schema(
 	{
-		universityType: {
+		propertyType: {
 			type: String,
-			enum: UniversityType,
+			enum: PropertyType,
 			required: true,
 		},
 
-		universityStatus: {
+		propertyStatus: {
 			type: String,
-			enum: UniversityStatus,
-			default: UniversityStatus.ACTIVE,
+			enum: PropertyStatus,
+			default: PropertyStatus.ACTIVE,
 		},
 
-		universityLocation: {
+		propertyLocation: {
 			type: String,
-			enum: UniversityLocation,
+			enum: PropertyLocation,
 			required: true,
 		},
 
-		universityAddress: {
-			type: String,
-			required: true,
-		},
-
-		universityTitle: {
+		propertyAddress: {
 			type: String,
 			required: true,
 		},
 
-		universityPrice: {
+		propertyTitle: {
+			type: String,
+			required: true,
+		},
+
+		propertyPrice: {
 			type: Number,
 			required: true,
 		},
 
-		universitySquare: {
+		propertySquare: {
 			type: Number,
 			required: true,
 		},
 
-		universityBeds: {
+		propertyBeds: {
 			type: Number,
 			required: true,
 		},
 
-		universityRooms: {
+		propertyRooms: {
 			type: Number,
 			required: true,
 		},
 
-		universityViews: {
+		propertyViews: {
 			type: Number,
 			default: 0,
 		},
 
-		universityLikes: {
+		propertyLikes: {
 			type: Number,
 			default: 0,
 		},
 
-		universityComments: {
+		propertyComments: {
 			type: Number,
 			default: 0,
 		},
 
-		universityRank: {
+		propertyRank: {
 			type: Number,
 			default: 0,
 		},
 
-		universityImages: {
+		propertyImages: {
 			type: [String],
 			required: true,
 		},
 
-		universityDesc: {
+		propertyDesc: {
 			type: String,
 		},
 
-		universityBarter: {
+		propertyBarter: {
 			type: Boolean,
 			default: false,
 		},
 
-		universityRent: {
+		propertyRent: {
 			type: Boolean,
 			default: false,
 		},
@@ -108,9 +108,9 @@ const UniversitySchema = new Schema(
 			type: Date,
 		},
 	},
-	{ timestamps: true, collection: 'universities' },
+	{ timestamps: true, collection: 'properties' },
 );
 
-UniversitySchema.index({ universityType: 1, universityLocation: 1, universityTitle: 1, universityPrice: 1 }, { unique: true });
+PropertySchema.index({ propertyType: 1, propertyLocation: 1, propertyTitle: 1, propertyPrice: 1 }, { unique: true });
 
-export default UniversitySchema;
+export default PropertySchema;
