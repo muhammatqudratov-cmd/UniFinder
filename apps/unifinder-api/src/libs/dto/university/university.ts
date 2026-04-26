@@ -3,6 +3,7 @@ import { ObjectId } from 'mongoose';
 import { MemberAuthType, MemberStatus, MemberType } from '../../enums/member.enum';
 import { Member, TotalCounter } from '../member/member';
 import { UniversityLocation, UniversityStatus, UniversityType } from '../../enums/university.enum';
+import { MeLiked } from '../like/like';
 
 @ObjectType()
 export class University {
@@ -82,6 +83,11 @@ export class University {
 
 	@Field(() => Member, { nullable: true })
 	memberData?: Member;
+
+	/** from aggregation **/
+
+	@Field(() => [MeLiked], { nullable: true })
+	meLiked?: MeLiked[];
 }
 
 @ObjectType()

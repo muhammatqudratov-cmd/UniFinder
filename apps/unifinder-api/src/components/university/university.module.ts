@@ -6,6 +6,7 @@ import { MemberModule } from '../member/member.module';
 import UniversitySchema from '../../schemas/University.model';
 import { UniversityService } from './university.service';
 import { UniversityResolver } from './university.resolver';
+import { LikeModule } from '../like/like.module';
 
 @Module({
 	imports: [
@@ -13,6 +14,7 @@ import { UniversityResolver } from './university.resolver';
 		ViewModule,
 		AuthModule,
 		MemberModule,
+		LikeModule,
 	],
 	providers: [UniversityResolver, UniversityService],
 	exports: [UniversityService],

@@ -11,11 +11,13 @@ import { UniversityService } from './university.service';
 import {
 	AgentUniversitiesInquiry,
 	AllUniversitiesInquiry,
+	OrdinaryInquiry,
 	UniveristiesInquiry,
 	UniversityInput,
 } from '../../libs/dto/university/univeristy.input';
 import { UniversityUpdate } from '../../libs/dto/university/university.update';
 import { Universities, University } from '../../libs/dto/university/university';
+import { AuthGuard } from '../auth/guards/auth.guard';
 
 @Resolver()
 export class UniversityResolver {
@@ -64,6 +66,26 @@ export class UniversityResolver {
 	): Promise<Universities> {
 		console.log('Query: getUniversities');
 		return await this.universityService.getUniversities(memberId, input);
+	}
+
+	@UseGuards(AuthGuard)
+	@Query((returns) => Universities)
+	public async myFavorites(
+		@Args('input') input: OrdinaryInquiry,
+		@AuthMember('_id') memberId: ObjectId,
+	): Promise<Universities> {
+		console.log('Query: myFavorites');
+		return await this.universityService.getFavorites(memberId, input);
+	}
+
+	@UseGuards(AuthGuard)
+	@Query((returns) => Universities)
+	public async myVisited(
+		@Args('input') input: OrdinaryInquiry,
+		@AuthMember('_id') memberId: ObjectId,
+	): Promise<Universities> {
+		console.log('Query: myVisited');
+		return await this.universityService.getVisited(memberId, input);
 	}
 
 	@Roles(MemberType.AGENT)

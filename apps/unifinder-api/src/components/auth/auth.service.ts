@@ -3,7 +3,7 @@ import * as bcrypt from 'bcryptjs';
 import { Member } from '../../libs/dto/member/member';
 import { JwtService } from '@nestjs/jwt';
 import { T } from '../../libs/types/common';
-import { shapeIntoMongoObjectId } from '../../libs/types/config';
+import { shapeIntoMongoObjectId } from '../../libs/config';
 
 @Injectable()
 export class AuthService {

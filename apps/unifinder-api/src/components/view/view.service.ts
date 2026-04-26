@@ -1,9 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
-import { T } from '../../libs/types/common';
-import { ViewInput } from '../../libs/dto/view/view.input';
+import { Model, ObjectId } from 'mongoose';
 import { View } from '../../libs/dto/view/view';
+import { ViewInput } from '../../libs/dto/view/view.input';
+import { T } from '../../libs/types/common';
+import { ViewGroup } from '../../libs/enums/view.enum';
+import { lookupVisit } from '../../libs/config';
+import { Universities } from '../../libs/dto/university/university';
+import { OrdinaryInquiry } from '../../libs/dto/university/univeristy.input';
 
 @Injectable()
 export class ViewService {
@@ -21,5 +25,41 @@ export class ViewService {
 		const { memberId, viewRefId } = input;
 		const search: T = { memberId: memberId, viewRefId: viewRefId };
 		return await this.viewModel.findOne(search).exec();
+	}
+
+	public async getVisitedUniversities(memberId: ObjectId, input: OrdinaryInquiry): Promise<Universities> {
+		const { page, limit } = input;
+		const match: T = { viewGroup: ViewGroup.UNIVERSITY, memberId: memberId };
+
+		const data: T = await this.viewModel
+			.aggregate([
+				{ $match: match },
+				{ $sort: { updatedAt: -1 } }, // Sort by most recent view
+				{
+					$lookup: {
+						from: 'universities',
+						localField: 'viewRefId',
+						foreignField: '_id',
+						as: 'visitedUniversity',
+					},
+				},
+				{ $unwind: '$visitedUniversity' },
+				{
+					$facet: {
+						list: [
+							{ $skip: (page - 1) * limit },
+							{ $limit: limit },
+							lookupVisit,
+							{ $unwind: '$visitedUniversity.memberData' },
+						],
+						metaCounter: [{ $count: 'total' }],
+					},
+				},
+			])
+			.exec();
+
+		const result: Universities = { list: [], metaCounter: data[0].metaCounter };
+		result.list = data[0].list.map((ele) => ele.visitedUniversity);
+		return result;
 	}
 }
