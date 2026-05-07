@@ -36,7 +36,7 @@ export const MemberSchema = new Schema(
 		memberPassword: {
 			type: String,
 			select: false,
-			required: true,
+			required: false,
 		},
 
 		memberFullName: {
@@ -56,7 +56,7 @@ export const MemberSchema = new Schema(
 			type: String,
 		},
 
-		memberProperties: {
+		memberUniversities: {
 			type: Number,
 			default: 0,
 		},
@@ -109,6 +109,11 @@ export const MemberSchema = new Schema(
 		memberBlocks: {
 			type: Number,
 			default: 0,
+		},
+
+		memberTelegramId: {
+			type: Number,
+			index: { unique: true, sparse: true },
 		},
 
 		deletedAt: {

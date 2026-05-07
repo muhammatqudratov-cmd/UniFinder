@@ -1,6 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import * as bcrypt from 'bcryptjs';
+import * as crypto from 'crypto';
 import { Member } from '../../libs/dto/member/member';
+import { TelegramAuthInput } from '../../libs/dto/member/member.input';
 import { JwtService } from '@nestjs/jwt';
 import { T } from '../../libs/types/common';
 import { shapeIntoMongoObjectId } from '../../libs/config';
@@ -32,5 +34,20 @@ export class AuthService {
 		const member = await this.jwtService.verifyAsync(token);
 		member._id = shapeIntoMongoObjectId(member._id);
 		return member;
+	}
+
+	public validateTelegramAuth(input: TelegramAuthInput): boolean {
+		const { hash, ...data } = input;
+
+		const checkString = Object.keys(data)
+			.sort()
+			.map((key) => `${key}=${data[key]}`)
+			.join('\n');
+
+		const secretKey = crypto.createHash('sha256').update(process.env.TELEGRAM_BOT_TOKEN).digest();
+		const computedHash = crypto.createHmac('sha256', secretKey).update(checkString).digest('hex');
+		const isExpired = Date.now() / 1000 - Number(data.auth_date) > 86400;
+
+		return computedHash === hash && !isExpired;
 	}
 }

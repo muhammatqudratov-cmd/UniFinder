@@ -1,7 +1,13 @@
 import { UseGuards } from '@nestjs/common';
 import { MemberService } from './member.service';
 import { Mutation, Resolver, Query, Args } from '@nestjs/graphql';
-import { AgentsInquiry, LoginInput, MemberInput, MembersInquiry } from '../../libs/dto/member/member.input';
+import {
+	AgentsInquiry,
+	LoginInput,
+	MemberInput,
+	MembersInquiry,
+	TelegramAuthInput,
+} from '../../libs/dto/member/member.input';
 import { Member, Members } from '../../libs/dto/member/member';
 import { AuthGuard } from '../auth/guards/auth.guard';
 import { AuthMember } from '../auth/decorators/authMember.decorator';
@@ -30,6 +36,13 @@ export class MemberResolver {
 	public async login(@Args('input') input: LoginInput): Promise<Member> {
 		console.log('Mutation: login');
 		return await this.memberService.login(input);
+	}
+
+	// TELEGRAM LOGIN
+	@Mutation(() => Member)
+	public async telegramLogin(@Args('input') input: TelegramAuthInput): Promise<Member> {
+		console.log('Mutation: telegramLogin');
+		return await this.memberService.telegramLogin(input);
 	}
 
 	@UseGuards(AuthGuard)

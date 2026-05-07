@@ -2,8 +2,14 @@ import { BadRequestException, Injectable, InternalServerErrorException } from '@
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, ObjectId } from 'mongoose';
 import { Member, Members } from '../../libs/dto/member/member';
-import { AgentsInquiry, LoginInput, MemberInput, MembersInquiry } from '../../libs/dto/member/member.input';
-import { MemberStatus, MemberType } from '../../libs/enums/member.enum';
+import {
+	AgentsInquiry,
+	LoginInput,
+	MemberInput,
+	MembersInquiry,
+	TelegramAuthInput,
+} from '../../libs/dto/member/member.input';
+import { MemberAuthType, MemberStatus, MemberType } from '../../libs/enums/member.enum';
 import { Direction, Message } from '../../libs/enums/common.enum';
 import { AuthService } from '../auth/auth.service';
 import { MemberUpdate } from '../../libs/dto/member/member.update';
@@ -55,6 +61,40 @@ export class MemberService {
 		response.accessToken = await this.authService.createToken(response);
 
 		return response;
+	}
+
+	// TELEGRAM LOGIN
+	public async telegramLogin(input: TelegramAuthInput): Promise<Member> {
+		// const isValid = this.authService.validateTelegramAuth(input);
+		// if (!isValid) throw new BadRequestException(Message.TOKEN_NOT_EXIST);
+
+		let member: Member = await this.memberModel.findOne({ memberTelegramId: input.id }).exec();
+
+		if (!member) {
+			// yangi user yaratish
+			const newMember = {
+				memberTelegramId: input.id,
+				memberNick: input.username ?? `tg_${input.id}`,
+				memberFullName: `${input.first_name}${input.last_name ? ' ' + input.last_name : ''}`,
+				memberImage: input.photo_url ?? '',
+				memberAuthType: MemberAuthType.TELEGRAM,
+				memberPhone: `tg_${input.id}`, // phone required, placeholder
+			};
+
+			try {
+				member = await this.memberModel.create(newMember);
+			} catch (err) {
+				console.log('Telegram signup error:', err.message);
+				throw new BadRequestException(Message.USED_MEMBER_NICK_OR_PHONE);
+			}
+		}
+
+		if (member.memberStatus === MemberStatus.BLOCK) {
+			throw new InternalServerErrorException(Message.BLOCKED_USER);
+		}
+
+		member.accessToken = await this.authService.createToken(member);
+		return member;
 	}
 
 	// UPDATE MEMBER

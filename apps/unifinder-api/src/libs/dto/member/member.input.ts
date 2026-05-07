@@ -117,3 +117,35 @@ export class MembersInquiry {
 	@Field(() => MIsearch)
 	search: MIsearch;
 }
+
+/** Telegram Integration **/
+@InputType()
+export class TelegramAuthInput {
+	@IsNotEmpty()
+	@Field(() => Int)
+	id: number;
+
+	@IsNotEmpty()
+	@Field(() => String)
+	first_name: string;
+
+	@IsOptional()
+	@Field(() => String, { nullable: true })
+	last_name?: string;
+
+	@IsOptional()
+	@Field(() => String, { nullable: true })
+	username?: string;
+
+	@IsOptional()
+	@Field(() => String, { nullable: true })
+	photo_url?: string;
+
+	@IsNotEmpty()
+	@Field(() => Int)
+	auth_date: number;
+
+	@IsNotEmpty()
+	@Field(() => String)
+	hash: string;
+}

@@ -83,6 +83,10 @@ export class Member {
 	@Field(() => String, { nullable: true }) //Frotend ga yuborish uchun
 	accessToken?: string; // signup va login da token yaratib yuborish uchun
 
+	/** Telegram Integration **/
+	@Field(() => Int, { nullable: true })
+	memberTelegramId?: number;
+
 	/** from aggregation **/
 
 	@Field(() => [MeLiked], { nullable: true })
