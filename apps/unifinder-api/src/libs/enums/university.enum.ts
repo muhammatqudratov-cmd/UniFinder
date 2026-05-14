@@ -13,7 +13,7 @@ registerEnumType(UniversityType, {
 
 export enum UniversityStatus {
 	ACTIVE = 'ACTIVE',
-	SOLD = 'SOLD',
+	INACTIVE = 'INACTIVE',
 	DELETE = 'DELETE',
 }
 registerEnumType(UniversityStatus, {

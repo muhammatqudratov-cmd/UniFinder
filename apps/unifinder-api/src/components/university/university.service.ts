@@ -84,7 +84,7 @@ export class UniversityService {
 			universityStatus: UniversityStatus.ACTIVE,
 		};
 
-		if (universityStatus === UniversityStatus.SOLD) input.soldAt = moment().toDate();
+		if (universityStatus === UniversityStatus.INACTIVE) input.soldAt = moment().toDate();
 		else if (universityStatus === UniversityStatus.DELETE) input.deletedAt = moment().toDate(); // delete bolsa ststusni delete ga o'zgartirib qo'yadi va deletedAt ni hozirgi vaqtga o'zgartiradi
 		const result = await this.universityModel
 			.findOneAndUpdate(search, input, {
@@ -267,7 +267,7 @@ export class UniversityService {
 			_id: input._id,
 			universityStatus: UniversityStatus.ACTIVE,
 		};
-		if (universityStatus === UniversityStatus.SOLD) soldAt = moment().toDate();
+		if (universityStatus === UniversityStatus.INACTIVE) soldAt = moment().toDate();
 		else if (universityStatus === UniversityStatus.DELETE) deletedAt = moment().toDate();
 
 		const result = await this.universityModel

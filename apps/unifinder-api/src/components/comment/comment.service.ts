@@ -33,7 +33,7 @@ export class CommentService {
 		}
 
 		switch (input.commentGroup) {
-			case CommentGroup.PROPERTY:
+			case CommentGroup.UNIVERSITY:
 				await this.universityService.universityStatsEditor({
 					_id: input.commentRefId,
 					targetKey: 'universityComments',
