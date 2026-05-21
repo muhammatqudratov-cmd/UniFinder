@@ -1,7 +1,7 @@
 import { Field, InputType, Int } from '@nestjs/graphql';
 import { IsIn, IsInt, IsNotEmpty, IsOptional, Length, Min } from 'class-validator';
 import { ObjectId } from 'mongoose';
-import { availableOptions, availableUniversitySorts } from '../../config';
+import { availableUniversitySorts } from '../../config';
 import { Direction } from '../../enums/common.enum';
 import { UniversityLocation, UniversityStatus, UniversityType } from '../../enums/university.enum';
 
@@ -27,23 +27,23 @@ export class UniversityInput {
 
 	@IsNotEmpty()
 	@Field(() => Number)
-	universityPrice: number;
+	universityTuition: number;
 
 	@IsNotEmpty()
 	@Field(() => Number)
-	universitySquare: number;
+	universityCampusSize: number;
 
 	@IsNotEmpty()
 	@IsInt()
 	@Min(1)
 	@Field(() => Int)
-	universityBeds: number;
+	universityCapacity: number;
 
 	@IsNotEmpty()
 	@IsInt()
 	@Min(1)
 	@Field(() => Int)
-	universityRooms: number;
+	universityFaculties: number;
 
 	@IsNotEmpty()
 	@Field(() => [String])
@@ -56,11 +56,11 @@ export class UniversityInput {
 
 	@IsOptional()
 	@Field(() => Boolean, { nullable: true })
-	universityBarter?: boolean;
+	universityScholarship?: boolean;
 
 	@IsOptional()
 	@Field(() => Boolean, { nullable: true })
-	universityRent?: boolean;
+	universityDormitory?: boolean;
 
 	memberId: ObjectId;
 
@@ -100,11 +100,11 @@ export class PeriodsRange {
 class PISearch {
 	@IsOptional()
 	@Field(() => String, { nullable: true })
-	memberId?: ObjectId; // its for filtering universities by memberId (agent's properties)
+	memberId?: ObjectId;
 
 	@IsOptional()
 	@Field(() => [UniversityLocation], { nullable: true })
-	locationList?: UniversityLocation[]; // its for locations
+	locationList?: UniversityLocation[];
 
 	@IsOptional()
 	@Field(() => [UniversityType], { nullable: true })
@@ -112,14 +112,13 @@ class PISearch {
 
 	@IsOptional()
 	@Field(() => [Int], { nullable: true })
-	roomsList?: Number[];
+	facultiesList?: Number[];
 
 	@IsOptional()
 	@Field(() => [Int], { nullable: true })
-	bedsList?: Number[];
+	capacityList?: Number[];
 
 	@IsOptional()
-	@IsIn(availableOptions, { each: true })
 	@Field(() => [String], { nullable: true })
 	options?: string[];
 

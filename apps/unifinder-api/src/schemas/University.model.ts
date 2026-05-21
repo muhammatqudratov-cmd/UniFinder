@@ -26,27 +26,27 @@ const UniversitySchema = new Schema(
 			required: true,
 		},
 
-		universityTitle: {
+		universityName: {
 			type: String,
 			required: true,
 		},
 
-		universityPrice: {
+		universityTuition: {
 			type: Number,
 			required: true,
 		},
 
-		universitySquare: {
+		universityCampusSize: {
 			type: Number,
 			required: true,
 		},
 
-		universityBeds: {
+		universityCapacity: {
 			type: Number,
 			required: true,
 		},
 
-		universityRooms: {
+		universityFaculties: {
 			type: Number,
 			required: true,
 		},
@@ -80,12 +80,12 @@ const UniversitySchema = new Schema(
 			type: String,
 		},
 
-		universityBarter: {
+		universityScholarship: {
 			type: Boolean,
 			default: false,
 		},
 
-		universityRent: {
+		universityDormitory: {
 			type: Boolean,
 			default: false,
 		},
@@ -108,11 +108,11 @@ const UniversitySchema = new Schema(
 			type: Date,
 		},
 	},
-	{ timestamps: true, collection: 'properties' },
+	{ timestamps: true, collection: 'universities' },
 );
 
 UniversitySchema.index(
-	{ universityType: 1, universityLocation: 1, universityTitle: 1, universityPrice: 1 },
+	{ universityType: 1, universityLocation: 1, universityName: 1, universityPrice: 1 },
 	{ unique: true },
 );
 

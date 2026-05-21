@@ -29,7 +29,7 @@ export class UniversityUpdate {
 	@IsOptional()
 	@Length(3, 100)
 	@Field(() => String, { nullable: true })
-	universityTitle?: string;
+	universityName?: string;
 
 	@IsOptional()
 	@Field(() => Number, { nullable: true })

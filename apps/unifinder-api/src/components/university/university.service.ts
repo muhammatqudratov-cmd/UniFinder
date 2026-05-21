@@ -139,8 +139,8 @@ export class UniversityService {
 		const {
 			memberId,
 			locationList,
-			roomsList,
-			bedsList,
+			facultiesList,
+			capacityList,
 			typeList,
 			periodsRange,
 			pricesRange,
@@ -150,15 +150,15 @@ export class UniversityService {
 		} = input.search;
 		if (memberId) match.memberId = shapeIntoMongoObjectId(memberId);
 		if (locationList) match.universityLocation = { $in: locationList };
-		if (roomsList) match.universityRooms = { $in: roomsList };
-		if (bedsList) match.universityBeds = { $in: bedsList };
+		if (facultiesList) match.universityFaculties = { $in: facultiesList };
+		if (capacityList) match.universityCapacity = { $in: capacityList };
 		if (typeList) match.universityType = { $in: typeList };
 
 		if (pricesRange) match.universityPrice = { $gte: pricesRange.start, $lte: pricesRange.end };
 		if (periodsRange) match.createdAt = { $gte: new Date(periodsRange.start), $lte: new Date(periodsRange.end) };
-		if (squaresRange) match.universitySquare = { $gte: squaresRange.start, $lte: squaresRange.end };
+		if (squaresRange) match.universityCampusSize = { $gte: squaresRange.start, $lte: squaresRange.end };
 
-		if (text) match.universityTitle = { $regex: new RegExp(text, 'i') };
+		if (text) match.universityName = { $regex: new RegExp(text, 'i') };
 		if (options) {
 			match['$or'] = options.map((ele) => {
 				// BARTER OR RENT qismi

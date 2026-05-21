@@ -1,6 +1,5 @@
 import { Field, Int, ObjectType } from '@nestjs/graphql';
 import { ObjectId } from 'mongoose';
-import { MemberAuthType, MemberStatus, MemberType } from '../../enums/member.enum';
 import { Member, TotalCounter } from '../member/member';
 import { UniversityLocation, UniversityStatus, UniversityType } from '../../enums/university.enum';
 import { MeLiked } from '../like/like';
@@ -23,19 +22,19 @@ export class University {
 	universityAddress: string;
 
 	@Field(() => String)
-	universityTitle: string;
+	universityName: string;
 
 	@Field(() => Number)
-	universityPrice: number;
+	universityTuition: number;
 
 	@Field(() => Number)
-	universitySquare: number;
+	universityCampusSize: number;
 
 	@Field(() => Int)
-	universityBeds: number;
+	universityCapacity: number;
 
 	@Field(() => Int)
-	universityRooms: number;
+	universityFaculties: number;
 
 	@Field(() => Int)
 	universityViews: number;
@@ -55,11 +54,11 @@ export class University {
 	@Field(() => String, { nullable: true })
 	universityDesc?: String;
 
-	@Field(() => Boolean)
-	universityBarter: boolean;
+	@Field(() => Boolean, { nullable: true })
+	universityScholarship?: boolean;
 
-	@Field(() => Boolean)
-	universityRent: boolean;
+	@Field(() => Boolean, { nullable: true })
+	universityDormitory?: boolean;
 
 	@Field(() => String)
 	memberId: ObjectId;
@@ -79,12 +78,10 @@ export class University {
 	@Field(() => Date)
 	updatedAt: Date;
 
-	/** from agrigations **/
+	/** from aggregations **/
 
 	@Field(() => Member, { nullable: true })
 	memberData?: Member;
-
-	/** from aggregation **/
 
 	@Field(() => [MeLiked], { nullable: true })
 	meLiked?: MeLiked[];
