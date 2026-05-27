@@ -47,7 +47,7 @@ const UniversitySchema = new Schema(
 		},
 
 		universityFaculties: {
-			type: Number,
+			type: [String],
 			required: true,
 		},
 
@@ -112,7 +112,7 @@ const UniversitySchema = new Schema(
 );
 
 UniversitySchema.index(
-	{ universityType: 1, universityLocation: 1, universityName: 1, universityPrice: 1 },
+	{ universityType: 1, universityLocation: 1, universityName: 1, universityTuition: 1 },
 	{ unique: true },
 );
 

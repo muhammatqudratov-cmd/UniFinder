@@ -9,7 +9,7 @@ export const availableUniversitySorts = [
 	'universityLikes',
 	'universityViews',
 	'universityRank',
-	'universityPrice',
+	'universityTuition', // to'g'ri
 ];
 export const availableBoardArticleSorts = ['createdAt', 'updatedAt', 'articleLikes', 'articleViews'];
 export const availableCommentSorts = ['createdAt', 'updatedAt'];
