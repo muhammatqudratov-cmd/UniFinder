@@ -13,7 +13,7 @@ import {
 	AgentUniversitiesInquiry,
 	AllUniversitiesInquiry,
 	OrdinaryInquiry,
-	UniveristiesInquiry,
+	UniversitiesInquiry,
 	UniversityInput,
 } from '../../libs/dto/university/univeristy.input';
 import { UniversityStatus } from '../../libs/enums/university.enum';
@@ -105,7 +105,7 @@ export class UniversityService {
 		return result;
 	}
 
-	public async getUniversities(memberId: ObjectId, input: UniveristiesInquiry): Promise<Universities> {
+	public async getUniversities(memberId: ObjectId, input: UniversitiesInquiry): Promise<Universities> {
 		const match: T = { universityStatus: UniversityStatus.ACTIVE };
 		const sort: T = { [input?.sort ?? 'createdAt']: input?.direction ?? Direction.DESC };
 
@@ -135,7 +135,7 @@ export class UniversityService {
 
 		return result[0];
 	}
-	private shapeMatchQuery(match: T, input: UniveristiesInquiry): void {
+	private shapeMatchQuery(match: T, input: UniversitiesInquiry): void {
 		const {
 			memberId,
 			locationList,
@@ -154,14 +154,14 @@ export class UniversityService {
 		if (capacityList) match.universityCapacity = { $in: capacityList };
 		if (typeList) match.universityType = { $in: typeList };
 
-		if (pricesRange) match.universityPrice = { $gte: pricesRange.start, $lte: pricesRange.end };
+		if (pricesRange) match.universityTuition = { $gte: pricesRange.start, $lte: pricesRange.end };
 		if (periodsRange) match.createdAt = { $gte: new Date(periodsRange.start), $lte: new Date(periodsRange.end) };
 		if (squaresRange) match.universityCampusSize = { $gte: squaresRange.start, $lte: squaresRange.end };
 
 		if (text) match.universityName = { $regex: new RegExp(text, 'i') };
-		if (options) {
+		if (options && options.length > 0) {
 			match['$or'] = options.map((ele) => {
-				// BARTER OR RENT qismi
+				//bARTER QISMI
 				return { [ele]: true };
 			});
 		}

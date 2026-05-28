@@ -140,7 +140,7 @@ class PISearch {
 }
 
 @InputType()
-export class UniveristiesInquiry {
+export class UniversitiesInquiry {
 	@IsNotEmpty()
 	@Min(1)
 	@Field(() => Int)

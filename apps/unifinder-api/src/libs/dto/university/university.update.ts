@@ -33,23 +33,23 @@ export class UniversityUpdate {
 
 	@IsOptional()
 	@Field(() => Number, { nullable: true })
-	universityPrice?: number;
+	universityTuition?: number;
 
 	@IsOptional()
 	@Field(() => Number, { nullable: true })
-	universitySquare?: number;
+	universityCampusSize?: number;
 
 	@IsOptional()
 	@IsInt()
 	@Min(1)
 	@Field(() => Int, { nullable: true })
-	universityBeds?: number;
+	universityCapacity?: number;
 
 	@IsOptional()
 	@IsInt()
 	@Min(1)
 	@Field(() => Int, { nullable: true })
-	universityRooms?: number;
+	universityFaculties?: number;
 
 	@IsOptional()
 	@Field(() => [String], { nullable: true })
@@ -62,11 +62,11 @@ export class UniversityUpdate {
 
 	@IsOptional()
 	@Field(() => Boolean, { nullable: true })
-	universityBarter?: boolean;
+	universityScholarship?: boolean;
 
 	@IsOptional()
 	@Field(() => Boolean, { nullable: true })
-	universityRent?: boolean;
+	universityDormitory?: boolean;
 
 	soldAt?: Date;
 

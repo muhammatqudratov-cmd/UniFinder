@@ -47,7 +47,7 @@ const UniversitySchema = new Schema(
 		},
 
 		universityFaculties: {
-			type: [String],
+			type: Number,
 			required: true,
 		},
 

@@ -12,7 +12,7 @@ import {
 	AgentUniversitiesInquiry,
 	AllUniversitiesInquiry,
 	OrdinaryInquiry,
-	UniveristiesInquiry,
+	UniversitiesInquiry,
 	UniversityInput,
 } from '../../libs/dto/university/univeristy.input';
 import { UniversityUpdate } from '../../libs/dto/university/university.update';
@@ -61,7 +61,7 @@ export class UniversityResolver {
 	@UseGuards(WithoutGuard)
 	@Query((returns) => Universities)
 	public async getUniversities(
-		@Args('input') input: UniveristiesInquiry,
+		@Args('input') input: UniversitiesInquiry,
 		@AuthMember('_id') memberId: ObjectId,
 	): Promise<Universities> {
 		console.log('Query: getUniversities');
@@ -97,6 +97,18 @@ export class UniversityResolver {
 	): Promise<Universities> {
 		console.log('Query: getAgentUniversities');
 		return await this.universityService.getAgentUniversities(memberId, input);
+	}
+
+	//Like
+	@UseGuards(AuthGuard)
+	@Mutation(() => University)
+	public async likeTargetUniversity(
+		@Args('universityId') input: string,
+		@AuthMember('_id') memberId: ObjectId,
+	): Promise<University> {
+		console.log('Mutation: likeTargetUniversity');
+		const likeRefId = shapeIntoMongoObjectId(input);
+		return await this.universityService.likeTargetUniversity(memberId, likeRefId);
 	}
 
 	/** ADMIN **/
