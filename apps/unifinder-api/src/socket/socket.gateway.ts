@@ -1,30 +1,121 @@
 import { Logger } from '@nestjs/common';
-import { OnGatewayInit, SubscribeMessage, WebSocketGateway } from '@nestjs/websockets';
+import { OnGatewayInit, SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import { Server } from 'ws';
+import * as WebSocket from 'ws';
+import { AuthService } from '../components/auth/auth.service';
+import { Member } from '../libs/dto/member/member';
+import * as url from 'url';
+import { Message } from '../libs/enums/common.enum';
 
-@WebSocketGateway({ transports: ['websocket'], secure: false }) //TCP
+interface MessagePayload {
+	event: string;
+	text: string;
+	memberData: Member;
+}
+
+interface InfoPayload {
+	event: string;
+	totalClients: number;
+	memberData: Member;
+	action: string;
+}
+
+@WebSocketGateway({ transports: ['websocket'], secure: false })
 export class SocketGateway implements OnGatewayInit {
-	private logger: Logger = new Logger('SocketEventsGateway'); //instance
-	private summaryClient: number = 0; // ulangan memberlar soni
+	private logger: Logger = new Logger('SocketEventsGateway');
+	private summaryClient: number = 0;
+	private clientsAuthMap = new Map<WebSocket, Member>();
+	private messageList: MessagePayload[] = [];
+
+	constructor(private authService: AuthService) {}
+
+	@WebSocketServer()
+	server: Server;
 
 	public afterInit(server: Server) {
-		this.logger.log(`WebSocket Server Initialized total: ${this.summaryClient}`);
+		this.logger.verbose(`WebSocket Server Initialized & total [${this.summaryClient}]`);
 	}
 
-	handleConnection(client: WebSocket, ...args: any[]) {
-		this.summaryClient++; // ulangandan keyin soni oshadi
-		this.logger.log(`== Client connected total: ${this.summaryClient} ==`);
+	private async retrievAuth(req: any): Promise<Member> {
+		try {
+			const parsedUrl = url.parse(req.url, true);
+			const { token } = parsedUrl.query;
+			console.log('token:', token);
+			return await this.authService.verifyToken(token as string);
+		} catch (err) {}
+		return null;
 	}
 
-	handleDisconnect(client: WebSocket) {
+	public async handleConnection(client: WebSocket, req: any) {
+		const authMember = await this.retrievAuth(req);
+		this.summaryClient++;
+		this.clientsAuthMap.set(client, authMember);
+
+		const clientNick: string = authMember?.memberNick ?? 'Guest';
+		this.logger.verbose(`Connection [${clientNick}] & total [${this.summaryClient}]`);
+
+		const infoMsg: InfoPayload = {
+			event: 'info',
+			totalClients: this.summaryClient,
+			memberData: authMember,
+			action: 'joined',
+		};
+		this.emitMessage(infoMsg); // all connection {emit}
+		//CLIENT MESSAGE
+		client.send(JSON.stringify({ event: 'getMessages', list: this.messageList }));
+	}
+
+	public async handleDisconnect(client: WebSocket) {
+		const authMember = this.clientsAuthMap.get(client);
 		this.summaryClient--;
-		this.logger.log(`== Client disconnected left total: ${this.summaryClient} ==`);
+		this.clientsAuthMap.delete(client);
+
+		const clientNick: string = authMember?.memberNick ?? 'Guest';
+		this.logger.verbose(`Disconnection [${clientNick}] & total [${this.summaryClient}]`);
+
+		const infoMsg: InfoPayload = {
+			event: 'info',
+			totalClients: this.summaryClient,
+			memberData: authMember,
+			action: 'left',
+		};
+
+		// except {broadcast}
+		this.broadcastMessage(client, infoMsg);
 	}
 
 	@SubscribeMessage('message')
-	public handleMessage(client: WebSocket, payload: any): string {
-		return 'Hello world!';
+	public async handleMessage(client: WebSocket, payload: string): Promise<void> {
+		const authMember = this.clientsAuthMap.get(client);
+
+		const newMessage: MessagePayload = {
+			event: 'message',
+			text: payload,
+			memberData: authMember,
+		};
+
+		const clientNick: string = authMember?.memberNick ?? 'Guest';
+		this.logger.verbose(`NEW MESSAGE [${clientNick}] : ${payload}`);
+
+		this.messageList.push(newMessage);
+		if (this.messageList.length > 5) this.messageList.splice(0, this.messageList.length - 5); // keep only last 5 messages
+
+		this.emitMessage(newMessage);
+	}
+
+	private broadcastMessage(sender: WebSocket, message: InfoPayload | MessagePayload) {
+		this.server.clients.forEach((client) => {
+			if (client !== sender && client.readyState === WebSocket.OPEN) {
+				client.send(JSON.stringify(message));
+			}
+		});
+	}
+
+	private emitMessage(message: InfoPayload | MessagePayload) {
+		this.server.clients.forEach((client) => {
+			if (client.readyState === WebSocket.OPEN) {
+				client.send(JSON.stringify(message));
+			}
+		});
 	}
 }
-
-// hyper text transfer protocol
