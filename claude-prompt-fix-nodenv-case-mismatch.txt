@@ -1,0 +1,55 @@
+Context: this is a pre-deploy bug fix for the backend (NestJS monorepo, apps: unifinder-api, unifinder-batch). A full audit found exactly one certain, reproducible logic bug, present identically in two files. No other code change is included in this prompt — this is the only fix, and it does not alter any business logic beyond correcting a string-case typo.
+
+The bug: in both `database.module.ts` files, the MongoDB connection string is chosen by comparing `process.env.NODE_ENV` against the UPPERCASE literal `'PRODUCTION'`:
+
+```ts
+uri: process.env.NODE_ENV === 'PRODUCTION' ? process.env.MONGO_PROD : process.env.MONGO_DEV,
+```
+
+...but two lines below, in the same file, the connection-success log message compares the SAME variable against the lowercase literal `'production'`:
+
+```ts
+console.log(`MongoDB connected succesfully to ${process.env.NODE_ENV === 'production' ? 'production ' : 'development'} db`);
+```
+
+`NODE_ENV` is set to lowercase `production` by virtually every Node.js hosting platform and tool (Render, Railway, Heroku, PM2, Docker `ENV NODE_ENV=production`, etc.) and is never conventionally set to uppercase `PRODUCTION`. Because of this case mismatch, the `uri:` line will NEVER match `'PRODUCTION'` in real-world deployments, so the app will always connect to `MONGO_DEV` even when correctly deployed with `NODE_ENV=production` — while the log line right below it will correctly print "production db", misleadingly suggesting the production database is in use when it is not. Right now `MONGO_DEV` and `MONGO_PROD` happen to hold the same connection string in `.env`, so this bug is currently invisible — but it will silently route to the wrong database the moment those two values are ever set differently (e.g. a separate production cluster).
+
+This prompt fixes the case mismatch by making both comparisons consistently lowercase (`'production'`), matching standard Node.js convention and the working log-line comparison already in the same file.
+
+=====================================================================
+FILE 1 — apps/unifinder-api/src/database/database.module.ts
+=====================================================================
+
+Find:
+```ts
+				uri: process.env.NODE_ENV === 'PRODUCTION' ? process.env.MONGO_PROD : process.env.MONGO_DEV,
+```
+
+Replace with:
+```ts
+				uri: process.env.NODE_ENV === 'production' ? process.env.MONGO_PROD : process.env.MONGO_DEV,
+```
+
+=====================================================================
+FILE 2 — apps/unifinder-batch/src/database/database.module.ts
+=====================================================================
+
+Find:
+```ts
+				uri: process.env.NODE_ENV === 'PRODUCTION' ? process.env.MONGO_PROD : process.env.MONGO_DEV,
+```
+
+Replace with:
+```ts
+				uri: process.env.NODE_ENV === 'production' ? process.env.MONGO_PROD : process.env.MONGO_DEV,
+```
+
+Do not change anything else in either file — the log-line comparison (`=== 'production'`) is already correct and stays as-is; the `MongooseModule.forRootAsync` structure, the constructor, and the connection-check logic are untouched.
+
+---
+
+Verify after implementing:
+1. `npx tsc --noEmit -p apps/unifinder-api/tsconfig.app.json` and the equivalent for `unifinder-batch` still report 0 errors (this is a string-literal-only change, no type impact).
+2. Grep the whole `apps/` folder for `NODE_ENV` and confirm both remaining comparisons (the `uri:` line and the `console.log` line, in both `unifinder-api` and `unifinder-batch`) now consistently use lowercase `'production'`.
+3. On your hosting platform, confirm `NODE_ENV=production` is actually set as an environment variable for the deployed backend (most platforms set this automatically, but verify it explicitly in the dashboard) — without it, the app will still correctly fall back to `MONGO_DEV`, which is the existing intended behavior for non-production environments.
+4. Once deployed with `NODE_ENV=production` set, check the startup logs and confirm the line reads "MongoDB connected succesfully to production db" AND that this corresponds to the actual `MONGO_PROD` connection string being used (e.g. by temporarily setting `MONGO_PROD` to a distinctly different, valid string and confirming the app connects there, not to `MONGO_DEV`).
